@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">STAM</string>
+    <string name="username">Email</string>
+    <string name="login">Login</string>
+    <string name="signup">Sign up</string>
+    <string name="openDrawer">openDrawer</string>
+    <string name="closeDrawer">closeDrawer</string>
+</resources>

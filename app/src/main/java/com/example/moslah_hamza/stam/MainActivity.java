@@ -7,6 +7,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -14,6 +15,8 @@ public class MainActivity extends AppCompatActivity {
 
     //Defining Variables
     private Toolbar toolbar;
+    private Boolean logtest;
+    private UserLocalStore userLocalStore;
     private NavigationView navigationView;
     private DrawerLayout drawerLayout;
     private Fragment fragment;
@@ -26,21 +29,36 @@ public class MainActivity extends AppCompatActivity {
         // Initializing Toolbar and setting it as the actionbar
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        int a = 2;
 
-        if (a == 1) {
+        userLocalStore = new UserLocalStore(this);
+        logtest = userLocalStore.getUserLoggedIn();
+        if (logtest == false) {
             fragment = new LoginFragment();
         } else {
-            fragment = new SignUPFragment();
+            fragment = new SuppliersFragment();
         }
 
+        //Initializing NavigationView
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
+
+        //change menu items if user not logged in
+        Menu menu = navigationView.getMenu();
+        MenuItem log = menu.findItem(R.id.nav_log);
+        MenuItem profile = menu.findItem(R.id.nav_sign);
+        if (!logtest) {
+            log.setIcon(R.drawable.login);
+            log.setTitle("Login");
+            profile.setIcon(R.drawable.signin);
+            profile.setTitle("Sign up");
+        } else {
+            profile.setVisible(false);
+            log.setIcon(R.drawable.logout);
+            log.setTitle("Logout");
+        }
 
         android.support.v4.app.FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment);
         fragmentTransaction.commit();
-
-        //Initializing NavigationView
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
 
         //Setting Navigation View Item Selected Listener to handle the item click of the navigation menu
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {

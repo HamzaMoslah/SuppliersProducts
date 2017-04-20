@@ -23,12 +23,32 @@ public class DataBaseHandler extends SQLiteOpenHelper {
 
     // Contacts table name
     private static final String TABLE_USERS = "users";
+    private static final String TABLE_SUPPLIERS = "suppliers";
+    private static final String TABLE_PRODUCTS = "products";
+    private static final String TABLE_SUPPROD = "supprod";
 
     // Contacts Table Columns names
     private static final String KEY_ID = "id";
+    private static final String KEY_PRODID = "id_prod";
+    private static final String KEY_SUPID = "id_sup";
+    private static final String KEY_USRID = "id_user";
     private static final String KEY_NAME = "name";
     private static final String KEY_MAIL = "email";
     private static final String KEY_PWD = "pwd";
+    private static final String KEY_PU = "pu";
+    private static final String KEY_QTE = "quantit";
+
+    //create statements
+    private static final String CREATE_SUPPLIERS_TABLE = "CREATE TABLE " + TABLE_SUPPLIERS + "("
+            + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + KEY_NAME + " TEXT)";
+    private static final String CREATE_PRODUCTS_TABLE = "CREATE TABLE " + TABLE_PRODUCTS + "("
+            + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + KEY_NAME + " TEXT," + KEY_PU + " REAL" + ")";
+    private static final String CREATE_USERS_TABLE = "CREATE TABLE " + TABLE_USERS + "("
+            + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + KEY_NAME + " TEXT,"
+            + KEY_MAIL + " TEXT," + KEY_PWD + " TEXT" + ")";
+    private static final String CREATE_SUPPROD_TABLE = "CREATE TABLE " + TABLE_SUPPROD + "("
+            + KEY_PRODID + " INTEGER," + KEY_SUPID + " INTEGER," + KEY_USRID + " INTEGER,"
+            + KEY_QTE + " INTEGER," + " PRIMARY KEY (" + KEY_USRID + ", " + KEY_SUPID + ", " + KEY_PRODID + ") )";
 
     public DataBaseHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -37,10 +57,10 @@ public class DataBaseHandler extends SQLiteOpenHelper {
     // Creating Tables
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String CREATE_CONTACTS_TABLE = "CREATE TABLE " + TABLE_USERS + "("
-                + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + KEY_NAME + " TEXT,"
-                + KEY_MAIL + " TEXT," + KEY_PWD + " TEXT" + ")";
-        db.execSQL(CREATE_CONTACTS_TABLE);
+        db.execSQL(CREATE_USERS_TABLE);
+        db.execSQL(CREATE_PRODUCTS_TABLE);
+        db.execSQL(CREATE_SUPPLIERS_TABLE);
+        db.execSQL(CREATE_SUPPROD_TABLE);
     }
 
     // Upgrading database
@@ -48,6 +68,9 @@ public class DataBaseHandler extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // Drop older table if existed
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
+        db.execSQL("DROP TABLE IF EXISTS " + CREATE_PRODUCTS_TABLE);
+        db.execSQL("DROP TABLE IF EXISTS " + CREATE_SUPPLIERS_TABLE);
+        db.execSQL("DROP TABLE IF EXISTS " + CREATE_SUPPROD_TABLE);
 
         // Create tables again
         onCreate(db);
@@ -67,13 +90,53 @@ public class DataBaseHandler extends SQLiteOpenHelper {
         db.close(); // Closing database connection
     }
 
+    // Adding new contact
+    public void addSupplier(Supplier supplier) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_NAME, supplier.get_name()); // Contact Name
+
+        // Inserting Row
+        db.insert(TABLE_SUPPLIERS, null, values);
+        db.close(); // Closing database connection
+    }
+
+    // Adding new contact
+    public void addProduct(Product product) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_NAME, product.get_name()); // Contact Name
+        values.put(KEY_PU, product.get_PU()); // Contact Name
+
+        // Inserting Row
+        db.insert(TABLE_PRODUCTS, null, values);
+        db.close(); // Closing database connection
+    }
+
+    // Adding new contact
+    public void addSupProd(int prod, int user, int sup, int qte) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_PRODID, prod);
+        values.put(KEY_SUPID, sup);
+        values.put(KEY_USRID, user);
+        values.put(KEY_QTE, qte);
+
+        // Inserting Row
+        db.insert(TABLE_SUPPROD, null, values);
+        db.close(); // Closing database connection
+    }
+
     // Getting single contact
     public User getUser(String email) {
         SQLiteDatabase db = this.getReadableDatabase();
 
-        Cursor cursor = db.query(TABLE_USERS, new String[] { KEY_ID,
-                        KEY_NAME, KEY_MAIL, KEY_PWD }, KEY_MAIL + "=?",
-                new String[] { String.valueOf(email) }, null, null, null, null);
+        Cursor cursor = db.query(TABLE_USERS, new String[]{KEY_ID,
+                        KEY_NAME, KEY_MAIL, KEY_PWD}, KEY_MAIL + "=?",
+                new String[]{String.valueOf(email)}, null, null, null, null);
         if (cursor != null)
             cursor.moveToFirst();
 
@@ -81,6 +144,94 @@ public class DataBaseHandler extends SQLiteOpenHelper {
                 cursor.getString(1), cursor.getString(2));
         // return contact
         return user;
+    }
+
+    // Getting single contact
+    public Supplier getSupplier(int id) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.query(TABLE_SUPPLIERS, new String[]{KEY_ID,
+                        KEY_NAME}, KEY_ID + "=?",
+                new String[]{String.valueOf(id)}, null, null, null, null);
+        if (cursor != null)
+            cursor.moveToFirst();
+
+        Supplier supplier = new Supplier(cursor.getString(1));
+        supplier.set_id(cursor.getInt(0));
+
+        // return contact
+        return supplier;
+    }
+
+    // Getting single contact
+    public Product getProduct(int id) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.query(TABLE_PRODUCTS, new String[]{KEY_ID,
+                        KEY_NAME, KEY_PU}, KEY_ID + "=?",
+                new String[]{String.valueOf(id)}, null, null, null, null);
+        if (cursor != null)
+            cursor.moveToFirst();
+
+        Product prod = new Product(cursor.getString(1), cursor.getDouble(2));
+        prod.set_id(cursor.getInt(0));
+
+        // return contact
+        return prod;
+    }
+
+    // Getting All Contacts
+    public List<Supplier> getAllSuppliers(int user) {
+        List<Supplier> supplierList = new ArrayList<Supplier>();
+        // Select All Query
+        String selectQuery = "SELECT " + KEY_SUPID + " FROM " + TABLE_SUPPROD
+                + " WHERE " + KEY_USRID + " = ?";
+
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        List<String> whereArgs = new ArrayList<>();
+        whereArgs.add(String.valueOf(user));
+        Cursor cursor = db.rawQuery(selectQuery, whereArgs.toArray(new String[0]));
+
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                // Adding contact to list
+                Supplier supplier = this.getSupplier(cursor.getInt(0));
+                supplierList.add(supplier);
+            } while (cursor.moveToNext());
+        }
+
+        // return contact list
+        return supplierList;
+    }
+
+    // Getting All Contacts
+    public List<Product> getAllProduct(int user, int sup) {
+        List<Product> productList = new ArrayList<Product>();
+        // Select All Query
+        String selectQuery = "SELECT " + KEY_PRODID + ", " + KEY_QTE + " FROM " + TABLE_SUPPROD
+                + " WHERE " + KEY_USRID + " = ? AND " + KEY_SUPID + " = ?";
+
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        List<String> whereArgs = new ArrayList<>();
+        whereArgs.add(String.valueOf(user));
+        whereArgs.add(String.valueOf(sup));
+        Cursor cursor = db.rawQuery(selectQuery, whereArgs.toArray(new String[0]));
+
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                // Adding contact to list
+                Product prod = this.getProduct(cursor.getInt(0));
+                prod.setQte(cursor.getInt(1));
+                productList.add(prod);
+            } while (cursor.moveToNext());
+        }
+
+        // return contact list
+        return productList;
     }
 
     // Getting All Contacts
@@ -117,6 +268,7 @@ public class DataBaseHandler extends SQLiteOpenHelper {
         // return count
         return cursor.getCount();
     }
+
     // Updating single contact
     public int updateUser(User user) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -127,14 +279,14 @@ public class DataBaseHandler extends SQLiteOpenHelper {
 
         // updating row
         return db.update(TABLE_USERS, values, KEY_ID + " = ?",
-                new String[] { String.valueOf(user.get_id()) });
+                new String[]{String.valueOf(user.get_id())});
     }
 
     // Deleting single contact
     public void deleteUser(User user) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_USERS, KEY_ID + " = ?",
-                new String[] { String.valueOf(user.get_id()) });
+                new String[]{String.valueOf(user.get_id())});
         db.close();
     }
 }

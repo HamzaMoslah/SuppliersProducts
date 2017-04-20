@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
 
         //change menu items if user not logged in
         Menu menu = navigationView.getMenu();
-        MenuItem log = menu.findItem(R.id.nav_log);
+        final MenuItem log = menu.findItem(R.id.nav_log);
         MenuItem profile = menu.findItem(R.id.nav_sign);
         if (!logtest) {
             log.setIcon(R.drawable.login);
@@ -80,10 +80,15 @@ public class MainActivity extends AppCompatActivity {
                 switch (menuItem.getItemId()) {
 
                     case R.id.nav_log:
+                        if (logtest) {
+                            userLocalStore.clearUserData();
+                            userLocalStore.setUserLoggedIn(false);
+                        }
                         fragment = new LoginFragment();
                         fragmentTransaction = getSupportFragmentManager().beginTransaction();
                         fragmentTransaction.replace(R.id.frame, fragment);
                         fragmentTransaction.commit();
+
                         return true;
 
                     case R.id.nav_sign:
@@ -92,7 +97,8 @@ public class MainActivity extends AppCompatActivity {
                         fragmentTransaction.replace(R.id.frame, fragment);
                         fragmentTransaction.commit();
                         return true;
-                    default: return true;
+                    default:
+                        return true;
                 }
 
             }

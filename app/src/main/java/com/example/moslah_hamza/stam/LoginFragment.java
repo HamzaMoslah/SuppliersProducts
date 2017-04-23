@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
@@ -57,6 +58,14 @@ public class LoginFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 String pwdHash = pwd.getText().toString();
+                try {
+                    pwdHash = SimpleSHA1.SHA1(pwdHash);
+                } catch (NoSuchAlgorithmException e) {
+                    e.printStackTrace();
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+
                 if (pwd.getText().toString().length() < 4 || email.getText().toString().length() < 4
                         || !email.getText().toString().contains("@")) {
                     new AlertDialog.Builder(getActivity())
@@ -74,21 +83,30 @@ public class LoginFragment extends Fragment {
                             })
                             .setIcon(android.R.drawable.ic_dialog_alert)
                             .show();
-                } else {
-                    try {
-                        pwdHash = SimpleSHA1.SHA1(pwdHash);
+                } else if (db.getUser(email.getText().toString()) == null ||
+                        !db.getUser(email.getText().toString()).get_pwd().equals(pwdHash)){
+                    new AlertDialog.Builder(getActivity())
+                            .setTitle("Erreur")
+                            .setMessage("Email ou mot de passe incorrect")
+                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // continue with delete
+                                }
+                            })
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .show();
+                }else {
+
                         User user = new User();
                         user = db.getUser(email.getText().toString());
                         userLocalStore.storeUserDate(user);
                         userLocalStore.setUserLoggedIn(true);
-                        final FragmentTransaction ft = getFragmentManager().beginTransaction();
-                        ft.replace(R.id.frame, new SuppliersFragment(), "NewFragmentTag");
-                        ft.commit();
-                    } catch (NoSuchAlgorithmException e) {
-                        e.printStackTrace();
-                    } catch (UnsupportedEncodingException e) {
-                        e.printStackTrace();
-                    }
+                        Toast.makeText(getActivity(),"Bienvenue "+user.get_name(),Toast.LENGTH_LONG).show();
+                        getActivity().finish();
+                        getActivity().startActivity(getActivity().getIntent());
+//                        final FragmentTransaction ft = getFragmentManager().beginTransaction();
+//                        ft.replace(R.id.frame, new SuppliersFragment(), "NewFragmentTag");
+//                        ft.commit();
                 }
             }
         });

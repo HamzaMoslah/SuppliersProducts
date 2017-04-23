@@ -10,24 +10,27 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Moslah_Hamza on 17/04/2017.
+ * Created by Moslah_Hamza on 23/04/2017.
  */
 
-public class SuppliersFragment extends Fragment {
+public class AddSupplier extends Fragment {
     List<String> mSuppliers;
     DataBaseHandler db;
-    FloatingActionButton fab;
+    Button fab;
+    EditText supname;
     UserLocalStore userLocalStore;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.suppliers,container,false);
+        View v = inflater.inflate(R.layout.add_supplier, container, false);
         db = new DataBaseHandler(getActivity());
         //shared preferences class'
         userLocalStore = new UserLocalStore(getActivity());
@@ -38,25 +41,17 @@ public class SuppliersFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        fab = (FloatingActionButton) view.findViewById(R.id.add);
+        fab = (Button) view.findViewById(R.id.add_sup);
+        supname = (EditText) view.findViewById(R.id.sup_name);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Supplier supplier = new Supplier(supname.getText().toString());
+                db.addSupplier(supplier);
                 final FragmentTransaction ft = getFragmentManager().beginTransaction();
-                ft.replace(R.id.frame, new AddSupplier(), "NewFragmentTag");
+                ft.replace(R.id.frame, new SuppliersFragment(), "NewFragmentTag");
                 ft.commit();
             }
         });
-
-        final RecyclerView rv = (RecyclerView) view.findViewById(R.id.supp_view);
-        LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
-        mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        rv.setLayoutManager(mLayoutManager);
-        mSuppliers = new ArrayList<>();
-        List<Supplier> supplierList = db.getAllUserSuppliers(userLocalStore.getLoggedInUser().get_id());
-        for(Supplier supplier : supplierList)
-            mSuppliers.add(supplier.get_name());
-
-        rv.setAdapter(new MyAdapter(mSuppliers));
     }
 }

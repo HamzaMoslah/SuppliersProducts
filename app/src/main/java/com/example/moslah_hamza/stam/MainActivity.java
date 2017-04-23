@@ -30,7 +30,13 @@ public class MainActivity extends AppCompatActivity {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        DataBaseHandler db = new DataBaseHandler(getApplicationContext());
+        db.createDataBase();
+
         userLocalStore = new UserLocalStore(this);
+
+//        userLocalStore.clearUserData();
+//        userLocalStore.setUserLoggedIn(false);
         logtest = userLocalStore.getUserLoggedIn();
         if (logtest == false) {
             fragment = new LoginFragment();
@@ -44,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
         //change menu items if user not logged in
         Menu menu = navigationView.getMenu();
         final MenuItem log = menu.findItem(R.id.nav_log);
-        MenuItem profile = menu.findItem(R.id.nav_sign);
+        final MenuItem profile = menu.findItem(R.id.nav_sign);
         if (!logtest) {
             log.setIcon(R.drawable.login);
             log.setTitle("Login");
@@ -83,11 +89,14 @@ public class MainActivity extends AppCompatActivity {
                         if (logtest) {
                             userLocalStore.clearUserData();
                             userLocalStore.setUserLoggedIn(false);
+
                         }
-                        fragment = new LoginFragment();
-                        fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                        fragmentTransaction.replace(R.id.frame, fragment);
-                        fragmentTransaction.commit();
+                        finish();
+                        startActivity(getIntent());
+//                        fragment = new LoginFragment();
+//                        fragmentTransaction = getSupportFragmentManager().beginTransaction();
+//                        fragmentTransaction.replace(R.id.frame, fragment);
+//                        fragmentTransaction.commit();
 
                         return true;
 

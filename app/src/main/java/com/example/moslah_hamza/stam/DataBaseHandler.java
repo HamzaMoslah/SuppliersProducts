@@ -27,6 +27,8 @@ public class DataBaseHandler extends SQLiteOpenHelper {
     private static final String TABLE_PRODUCTS = "products";
     private static final String TABLE_SUPPROD = "supprod";
 
+    private SQLiteDatabase db;
+
     // Contacts Table Columns names
     private static final String KEY_ID = "id";
     private static final String KEY_PRODID = "id_prod";
@@ -39,14 +41,14 @@ public class DataBaseHandler extends SQLiteOpenHelper {
     private static final String KEY_QTE = "quantit";
 
     //create statements
-    private static final String CREATE_SUPPLIERS_TABLE = "CREATE TABLE " + TABLE_SUPPLIERS + "("
+    private static final String CREATE_SUPPLIERS_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_SUPPLIERS + "("
             + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + KEY_NAME + " TEXT)";
-    private static final String CREATE_PRODUCTS_TABLE = "CREATE TABLE " + TABLE_PRODUCTS + "("
+    private static final String CREATE_PRODUCTS_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_PRODUCTS + "("
             + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + KEY_NAME + " TEXT," + KEY_PU + " REAL" + ")";
-    private static final String CREATE_USERS_TABLE = "CREATE TABLE " + TABLE_USERS + "("
+    private static final String CREATE_USERS_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_USERS + "("
             + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + KEY_NAME + " TEXT,"
             + KEY_MAIL + " TEXT," + KEY_PWD + " TEXT" + ")";
-    private static final String CREATE_SUPPROD_TABLE = "CREATE TABLE " + TABLE_SUPPROD + "("
+    private static final String CREATE_SUPPROD_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_SUPPROD + "("
             + KEY_PRODID + " INTEGER," + KEY_SUPID + " INTEGER," + KEY_USRID + " INTEGER,"
             + KEY_QTE + " INTEGER," + " PRIMARY KEY (" + KEY_USRID + ", " + KEY_SUPID + ", " + KEY_PRODID + ") )";
 
@@ -76,6 +78,11 @@ public class DataBaseHandler extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    public void createDataBase(){
+        this.db=getWritableDatabase();
+        this.onCreate(db);
+    }
+
     // Adding new contact
     public void addUser(User user) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -83,7 +90,7 @@ public class DataBaseHandler extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(KEY_NAME, user.get_name()); // Contact Name
         values.put(KEY_MAIL, user.get_email()); // Contact Phone Number
-        values.put(KEY_MAIL, user.get_pwd()); // Contact Phone Number
+        values.put(KEY_PWD, user.get_pwd()); // Contact Phone Number
 
         // Inserting Row
         db.insert(TABLE_USERS, null, values);
@@ -137,11 +144,14 @@ public class DataBaseHandler extends SQLiteOpenHelper {
         Cursor cursor = db.query(TABLE_USERS, new String[]{KEY_ID,
                         KEY_NAME, KEY_MAIL, KEY_PWD}, KEY_MAIL + "=?",
                 new String[]{String.valueOf(email)}, null, null, null, null);
-        if (cursor != null)
-            cursor.moveToFirst();
 
-        User user = new User(cursor.getString(0),
-                cursor.getString(1), cursor.getString(2));
+        User user = null;
+        if (cursor.moveToFirst()){
+            user = new User(cursor.getString(1),
+                    cursor.getString(2), cursor.getString(3));
+            user.set_id(cursor.getInt(0));
+        }
+
         // return contact
         return user;
     }
@@ -181,7 +191,7 @@ public class DataBaseHandler extends SQLiteOpenHelper {
     }
 
     // Getting All Contacts
-    public List<Supplier> getAllSuppliers(int user) {
+    public List<Supplier> getAllUserSuppliers(int user) {
         List<Supplier> supplierList = new ArrayList<Supplier>();
         // Select All Query
         String selectQuery = "SELECT " + KEY_SUPID + " FROM " + TABLE_SUPPROD
@@ -207,7 +217,53 @@ public class DataBaseHandler extends SQLiteOpenHelper {
     }
 
     // Getting All Contacts
-    public List<Product> getAllProduct(int user, int sup) {
+    public List<Supplier> getAllSuppliers() {
+        List<Supplier> supplierList = new ArrayList<Supplier>();
+        // Select All Query
+        String selectQuery = "SELECT * FROM " + TABLE_SUPPLIERS;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                // Adding contact to list
+                Supplier supplier = this.getSupplier(cursor.getInt(0));
+                supplierList.add(supplier);
+            } while (cursor.moveToNext());
+        }
+
+        // return contact list
+        return supplierList;
+    }
+
+    // Getting All Contacts
+    public List<Product> getAllProducts() {
+        List<Product> productList = new ArrayList<Product>();
+        // Select All Query
+        String selectQuery = "SELECT * FROM " + TABLE_PRODUCTS;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                // Adding contact to list
+                Product product = this.getProduct(cursor.getInt(0));
+                productList.add(product);
+            } while (cursor.moveToNext());
+        }
+
+        // return contact list
+        return productList;
+    }
+
+    // Getting All Contacts
+    public List<Product> getAllUserProduct(int user, int sup) {
         List<Product> productList = new ArrayList<Product>();
         // Select All Query
         String selectQuery = "SELECT " + KEY_PRODID + ", " + KEY_QTE + " FROM " + TABLE_SUPPROD

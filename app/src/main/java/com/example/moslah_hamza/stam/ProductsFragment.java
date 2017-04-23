@@ -18,11 +18,16 @@ import java.util.List;
 
 public class ProductsFragment extends Fragment {
     List<String> mProducts;
+    DataBaseHandler db;
+    UserLocalStore userLocalStore;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.suppliers, container, false);
+        db = new DataBaseHandler(getActivity());
+        //shared preferences class'
+        userLocalStore = new UserLocalStore(getActivity());
         return v;
     }
 
@@ -35,6 +40,11 @@ public class ProductsFragment extends Fragment {
         mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         rv.setLayoutManager(mLayoutManager);
         mProducts = new ArrayList<>();
+
+//        List<Product> productList = db.getAllUserProduct(userLocalStore.getLoggedInUser().get_id());
+//        for(Product product : productList)
+//            mProducts.add(product.get_name());
+
         rv.setAdapter(new MyAdapter(mProducts));
     }
 }

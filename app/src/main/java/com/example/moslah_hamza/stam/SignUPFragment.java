@@ -12,9 +12,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Moslah_Hamza on 17/04/2017.
@@ -52,7 +55,7 @@ public class SignUPFragment extends Fragment {
                 String pwdHash = pwd.getText().toString();
                 if (pwdConf.getText().toString().length() < 4 || pwd.getText().toString().length() < 4 ||
                         name.getText().toString().length() < 4 || email.getText().toString().length() < 4 ||
-                        !email.getText().toString().contains("@") || pwd.getText().toString() != pwdConf.getText().toString()) {
+                        !email.getText().toString().contains("@") || !pwd.getText().toString().equals(pwdConf.getText().toString())) {
                     new AlertDialog.Builder(getActivity())
                             .setTitle("Erreur")
                             .setMessage("Veuillez vérifier les champs saisis")
@@ -61,30 +64,43 @@ public class SignUPFragment extends Fragment {
                                     // continue with delete
                                 }
                             })
-                            .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .show();
+                }else if (db.getUser(email.getText().toString()) != null){
+                    new AlertDialog.Builder(getActivity())
+                            .setTitle("Erreur")
+                            .setMessage("l'adresse email est utilisée")
+                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
-                                    // do nothing
+                                    // continue with delete
                                 }
                             })
                             .setIcon(android.R.drawable.ic_dialog_alert)
                             .show();
-                } else {
+                }
+                else {
                     try {
                         pwdHash = SimpleSHA1.SHA1(pwdHash);
                         User user = new User(name.getText().toString(), email.getText().toString(), pwdHash);
                         db.addUser(user);
                         userLocalStore.storeUserDate(user);
                         userLocalStore.setUserLoggedIn(true);
-                        final FragmentTransaction ft = getFragmentManager().beginTransaction();
-                        ft.replace(R.id.frame, new SuppliersFragment(), "NewFragmentTag");
-                        ft.commit();
+                        Toast.makeText(getActivity(),"Bienvenue "+user.get_name(),Toast.LENGTH_LONG).show();
+                        getActivity().finish();
+                        getActivity().startActivity(getActivity().getIntent());
+//                        final FragmentTransaction ft = getFragmentManager().beginTransaction();
+//                        ft.replace(R.id.frame, new SuppliersFragment(), "NewFragmentTag");
+//                        ft.commit();
                     } catch (NoSuchAlgorithmException e) {
                         e.printStackTrace();
                     } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();
                     }
                 }
-                Log.d("name : ", db.getAllUsers().get(0).get_name());
+                List<User> users = new ArrayList<User>();
+                users = db.getAllUsers();
+                for (User user : users)
+                    Log.d("mail : ", user.get_email());
             }
         });
     }

@@ -12,7 +12,7 @@
         android:textAppearance="?android:attr/textAppearanceLarge" ></TextView>
 
     <TextView
-        android:id="@+id/tel"
+        android:id="@+id/qte"
         android:layout_margin="@dimen/activity_horizontal_margin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -20,15 +20,7 @@
         android:textAppearance="?android:attr/textAppearanceLarge" ></TextView>
 
     <TextView
-        android:id="@+id/adress"
-        android:layout_margin="@dimen/activity_horizontal_margin"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:textAppearance="?android:attr/textAppearanceLarge" ></TextView>
-
-    <TextView
-        android:id="@+id/created"
+        android:id="@+id/pu"
         android:layout_margin="@dimen/activity_horizontal_margin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

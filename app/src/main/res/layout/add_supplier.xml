@@ -28,6 +28,38 @@
             android:textColorHint="@color/grey" />
     </android.support.design.widget.TextInputLayout>
 
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/text_field_margin"
+        android:textColorHint="@color/grey">
+
+        <EditText
+            android:id="@+id/sup_adress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Adresse du fournissuer"
+            android:textColor="@color/orange"
+            android:textColorHighlight="@color/grey"
+            android:textColorHint="@color/grey" />
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/text_field_margin"
+        android:textColorHint="@color/grey">
+
+        <EditText
+            android:id="@+id/sup_tel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Téléphone du fournissuer"
+            android:textColor="@color/orange"
+            android:textColorHighlight="@color/grey"
+            android:textColorHint="@color/grey" />
+    </android.support.design.widget.TextInputLayout>
+
     <android.support.v7.widget.AppCompatButton
         android:id="@+id/add_sup"
         android:layout_width="match_parent"

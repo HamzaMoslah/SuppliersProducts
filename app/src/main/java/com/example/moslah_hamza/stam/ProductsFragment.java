@@ -17,8 +17,9 @@ import java.util.List;
  */
 
 public class ProductsFragment extends Fragment {
-    List<String> mProducts;
+    List<Product> mProducts;
     DataBaseHandler db;
+    int supid;
     UserLocalStore userLocalStore;
 
     @Nullable
@@ -34,13 +35,16 @@ public class ProductsFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        Bundle bundle = getArguments();
+        supid = bundle.getInt("sup");
 
-//        final RecyclerView rv = (RecyclerView) view.findViewById(R.id.supp_view);
-//        LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
-//        mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-//        rv.setLayoutManager(mLayoutManager);
-//        mProducts = new ArrayList<>();
-//
-//        rv.setAdapter(new SupAdapter(mProducts, getActivity(),this));
+        final RecyclerView rv = (RecyclerView) view.findViewById(R.id.supp_view);
+        LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
+        mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        rv.setLayoutManager(mLayoutManager);
+        mProducts = new ArrayList<>();
+        mProducts = db.getAllUserProduct(userLocalStore.getLoggedInUser().get_id(),supid);
+
+        rv.setAdapter(new ProdAdapter(mProducts, getActivity(),this));
     }
 }

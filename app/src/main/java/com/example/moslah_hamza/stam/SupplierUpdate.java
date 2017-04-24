@@ -24,7 +24,7 @@ public class SupplierUpdate extends Fragment {
     UserLocalStore userLocalStore;
     String name;
     int id;
-    EditText nameText;
+    EditText nameText, telText, adText;
     Button delbt, upbt, prod;
 
     @Nullable
@@ -41,18 +41,24 @@ public class SupplierUpdate extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         nameText = (EditText) view.findViewById(R.id.sup_name);
+        adText = (EditText) view.findViewById(R.id.sup_adress);
+        telText = (EditText) view.findViewById(R.id.sup_tel);
         upbt = (Button) view.findViewById(R.id.update_sup);
         delbt = (Button) view.findViewById(R.id.delete_sup);
         prod = (Button) view.findViewById(R.id.list_prod);
         Bundle bundle = getArguments();
         name = bundle.getString("name");
+        String tel = bundle.getString("tel");
+        String adress = bundle.getString("adress");
         nameText.setText(name);
+        telText.setText(tel);
+        adText.setText(adress);
         id = bundle.getInt("id");
 
         upbt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                db.updateSupplier(nameText.getText().toString(), id);
+                db.updateSupplier(nameText.getText().toString(), id, telText.getText().toString(), adText.getText().toString());
                 final FragmentTransaction ft = getFragmentManager().beginTransaction();
                 ft.replace(R.id.frame, new SuppliersFragment(), "NewFragmentTag");
                 ft.commit();
@@ -73,9 +79,18 @@ public class SupplierUpdate extends Fragment {
             @Override
             public void onClick(View v) {
                 final FragmentTransaction ft = getFragmentManager().beginTransaction();
-                ft.replace(R.id.frame, new ProductsFragment(), "NewFragmentTag");
+                ft.replace(R.id.frame, productsInstance(), "NewFragmentTag");
                 ft.commit();
             }
         });
+    }
+
+    public ProductsFragment productsInstance() {
+        ProductsFragment productsFragment = new ProductsFragment();
+        Bundle args = new Bundle();
+        args.putInt("sup", id);
+        productsFragment.setArguments(args);
+
+        return productsFragment;
     }
 }

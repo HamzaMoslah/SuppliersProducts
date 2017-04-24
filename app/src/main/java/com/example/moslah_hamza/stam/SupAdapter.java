@@ -42,6 +42,9 @@ public class SupAdapter extends RecyclerView.Adapter<SupAdapter.MyViewHolder> {
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
         holder.name.setText(mtitles.get(position).get_name());
+        holder.created.setText(mtitles.get(position).getCreated_at());
+        holder.adress.setText(mtitles.get(position).getAdress());
+        holder.tel.setText(mtitles.get(position).getTel());
     }
 
     @Override
@@ -51,10 +54,16 @@ public class SupAdapter extends RecyclerView.Adapter<SupAdapter.MyViewHolder> {
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         private final TextView name;
+        private final TextView tel;
+        private final TextView created;
+        private final TextView adress;
 
         public MyViewHolder(final View itemView) {
             super(itemView);
             name = ((TextView) itemView.findViewById(R.id.name));
+            tel = ((TextView) itemView.findViewById(R.id.tel));
+            adress = ((TextView) itemView.findViewById(R.id.adress));
+            created = ((TextView) itemView.findViewById(R.id.created));
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -71,6 +80,8 @@ public class SupAdapter extends RecyclerView.Adapter<SupAdapter.MyViewHolder> {
             SupplierUpdate supplierUpdate = new SupplierUpdate();
             Bundle args = new Bundle();
             args.putString("name", name);
+            args.putString("tel", mtitles.get(this.getLayoutPosition()).getTel());
+            args.putString("adress", mtitles.get(this.getLayoutPosition()).getAdress());
             args.putInt("id", mtitles.get(this.getLayoutPosition()).get_id());
             supplierUpdate.setArguments(args);
 

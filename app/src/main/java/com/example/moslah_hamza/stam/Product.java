@@ -6,10 +6,11 @@ package com.example.moslah_hamza.stam;
 
 public class Product {
     //private variables
-    int _id;
-    String _name;
-    double _PU;
-    int qte;
+    private int _id;
+    private String _name;
+    private double _PU;
+    private int qte;
+    private int user, sup;
 
     public Product() {
     }
@@ -17,6 +18,22 @@ public class Product {
     public Product(String _name, double _PU) {
         this._name = _name;
         this._PU = _PU;
+    }
+
+    public int getUser() {
+        return user;
+    }
+
+    public void setUser(int user) {
+        this.user = user;
+    }
+
+    public int getSup() {
+        return sup;
+    }
+
+    public void setSup(int sup) {
+        this.sup = sup;
     }
 
     public int get_id() {

@@ -37,14 +37,19 @@ public class DataBaseHandler extends SQLiteOpenHelper {
     private static final String KEY_NAME = "name";
     private static final String KEY_MAIL = "email";
     private static final String KEY_PWD = "pwd";
+    private static final String KEY_ADRESS = "adress";
+    private static final String KEY_TEL = "tel";
+    private static final String KEY_CREATED = "created_at";
     private static final String KEY_PU = "pu";
     private static final String KEY_QTE = "quantit";
 
     //create statements
     private static final String CREATE_SUPPLIERS_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_SUPPLIERS + "("
-            + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + KEY_NAME + " TEXT, " + KEY_USRID + " INTEGER)";
+            + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + KEY_NAME + " TEXT, " + KEY_ADRESS + " TEXT, " +
+            KEY_CREATED + " TEXT, " + KEY_TEL + " TEXT, " + KEY_USRID + " INTEGER)";
     private static final String CREATE_PRODUCTS_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_PRODUCTS + "("
-            + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + KEY_NAME + " TEXT," + KEY_PU + " REAL" + ")";
+            + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + KEY_NAME + " TEXT," + KEY_PU + " REAL, " + KEY_USRID + " INTEGER, "+
+            KEY_QTE + " INTEGER, "+KEY_SUPID + " INTEGER)";
     private static final String CREATE_USERS_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_USERS + "("
             + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + KEY_NAME + " TEXT,"
             + KEY_MAIL + " TEXT," + KEY_PWD + " TEXT" + ")";
@@ -104,6 +109,9 @@ public class DataBaseHandler extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(KEY_NAME, supplier.get_name()); // Contact Name
         values.put(KEY_USRID, supplier.getUsr_id());
+        values.put(KEY_CREATED, supplier.getCreated_at());
+        values.put(KEY_ADRESS, supplier.getAdress());
+        values.put(KEY_TEL, supplier.getTel());
 
         // Inserting Row
         db.insert(TABLE_SUPPLIERS, null, values);
@@ -162,13 +170,17 @@ public class DataBaseHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query(TABLE_SUPPLIERS, new String[]{KEY_ID,
-                        KEY_NAME, KEY_USRID}, KEY_ID + "=?",
+                        KEY_NAME, KEY_USRID, KEY_CREATED, KEY_ADRESS, KEY_TEL}, KEY_ID + "=?",
                 new String[]{String.valueOf(id)}, null, null, null, null);
         if (cursor != null)
             cursor.moveToFirst();
 
         Supplier supplier = new Supplier(cursor.getString(1), cursor.getInt(2));
         supplier.set_id(cursor.getInt(0));
+
+        supplier.setCreated_at(cursor.getString(3));
+        supplier.setAdress(cursor.getString(4));
+        supplier.setTel(cursor.getString(5));
 
         // return contact
         return supplier;
@@ -267,7 +279,7 @@ public class DataBaseHandler extends SQLiteOpenHelper {
     public List<Product> getAllUserProduct(int user, int sup) {
         List<Product> productList = new ArrayList<Product>();
         // Select All Query
-        String selectQuery = "SELECT " + KEY_PRODID + ", " + KEY_QTE + " FROM " + TABLE_SUPPROD
+        String selectQuery = "SELECT " + KEY_ID + ", " + KEY_QTE + ", " + KEY_NAME + ", " + KEY_PU + " FROM " + TABLE_PRODUCTS
                 + " WHERE " + KEY_USRID + " = ? AND " + KEY_SUPID + " = ?";
 
         SQLiteDatabase db = this.getReadableDatabase();
@@ -281,8 +293,11 @@ public class DataBaseHandler extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 // Adding contact to list
-                Product prod = this.getProduct(cursor.getInt(0));
+                Product prod = new Product(cursor.getString(2),cursor.getDouble(3));
                 prod.setQte(cursor.getInt(1));
+                prod.set_id(cursor.getInt(0));
+                prod.setSup(sup);
+                prod.setUser(user);
                 productList.add(prod);
             } while (cursor.moveToNext());
         }
@@ -340,11 +355,13 @@ public class DataBaseHandler extends SQLiteOpenHelper {
     }
 
     // Updating single contact
-    public int updateSupplier(String supplier, int id) {
+    public int updateSupplier(String supplier, int id, String tel, String adress) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
         values.put(KEY_NAME, supplier);
+        values.put(KEY_TEL, tel);
+        values.put(KEY_ADRESS, adress);
 
         // updating row
         return db.update(TABLE_SUPPLIERS, values, KEY_ID + " = ?",

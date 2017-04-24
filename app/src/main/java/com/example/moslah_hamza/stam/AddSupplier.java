@@ -13,7 +13,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -24,7 +27,7 @@ public class AddSupplier extends Fragment {
     List<String> mSuppliers;
     DataBaseHandler db;
     Button fab;
-    EditText supname;
+    EditText supname, suptel, supad;
     UserLocalStore userLocalStore;
 
     @Nullable
@@ -40,13 +43,20 @@ public class AddSupplier extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        supad = (EditText) view.findViewById(R.id.sup_adress);
+        suptel = (EditText) view.findViewById(R.id.sup_tel);
         fab = (Button) view.findViewById(R.id.add_sup);
         supname = (EditText) view.findViewById(R.id.sup_name);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Supplier supplier = new Supplier(supname.getText().toString(), userLocalStore.getLoggedInUser().get_id());
+                supplier.setTel(suptel.getText().toString());
+                supplier.setAdress(supad.getText().toString());
+                String DATE_FORMAT = "yyyy-MM-dd";
+                Date date = new Date();
+                DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
+                supplier.setCreated_at(dateFormat.format(date));
                 db.addSupplier(supplier);
                 final FragmentTransaction ft = getFragmentManager().beginTransaction();
                 ft.replace(R.id.frame, new SuppliersFragment(), "NewFragmentTag");

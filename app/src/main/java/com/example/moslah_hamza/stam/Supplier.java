@@ -9,6 +9,9 @@ public class Supplier {
     private int _id;
     private int usr_id;
     private String _name;
+    private String tel;
+    private String adress;
+    private String created_at;
 
     public Supplier() {
     }
@@ -16,6 +19,30 @@ public class Supplier {
     public Supplier(String _name, int usr_id) {
         this._name = _name;
         this.usr_id = usr_id;
+    }
+
+    public String getTel() {
+        return tel;
+    }
+
+    public void setTel(String tel) {
+        this.tel = tel;
+    }
+
+    public String getAdress() {
+        return adress;
+    }
+
+    public void setAdress(String adress) {
+        this.adress = adress;
+    }
+
+    public String getCreated_at() {
+        return created_at;
+    }
+
+    public void setCreated_at(String created_at) {
+        this.created_at = created_at;
     }
 
     public int getUsr_id() {

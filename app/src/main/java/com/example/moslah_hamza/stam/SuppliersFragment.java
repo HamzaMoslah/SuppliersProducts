@@ -57,6 +57,6 @@ public class SuppliersFragment extends Fragment {
         for(Supplier supplier : supplierList)
             mSuppliers.add(supplier.get_name());
 
-        rv.setAdapter(new MyAdapter(mSuppliers));
+        rv.setAdapter(new SupAdapter(supplierList, getActivity(),this));
     }
 }

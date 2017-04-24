@@ -46,7 +46,7 @@ public class AddSupplier extends Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Supplier supplier = new Supplier(supname.getText().toString());
+                Supplier supplier = new Supplier(supname.getText().toString(), userLocalStore.getLoggedInUser().get_id());
                 db.addSupplier(supplier);
                 final FragmentTransaction ft = getFragmentManager().beginTransaction();
                 ft.replace(R.id.frame, new SuppliersFragment(), "NewFragmentTag");

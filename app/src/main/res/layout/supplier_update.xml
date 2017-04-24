@@ -29,14 +29,34 @@
     </android.support.design.widget.TextInputLayout>
 
     <android.support.v7.widget.AppCompatButton
-        android:id="@+id/add_sup"
+        android:id="@+id/update_sup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/buttons_margin"
+        android:background="@color/orange"
+        android:padding="@dimen/buttons_padding"
+        android:text="@string/update"
+        android:textColor="@color/background" />
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/delete_sup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/buttons_margin"
+        android:background="@color/orange"
+        android:padding="@dimen/buttons_padding"
+        android:text="@string/delete"
+        android:textColor="@color/background" />
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/list_prod"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/buttons_margin"
         android:layout_marginTop="@dimen/buttons_margin"
         android:background="@color/orange"
         android:padding="@dimen/buttons_padding"
-        android:text="@string/sup"
+        android:text="@string/list_prod"
         android:textColor="@color/background" />
 
 </LinearLayout>

@@ -42,7 +42,7 @@ public class DataBaseHandler extends SQLiteOpenHelper {
 
     //create statements
     private static final String CREATE_SUPPLIERS_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_SUPPLIERS + "("
-            + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + KEY_NAME + " TEXT)";
+            + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + KEY_NAME + " TEXT, " + KEY_USRID + " INTEGER)";
     private static final String CREATE_PRODUCTS_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_PRODUCTS + "("
             + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + KEY_NAME + " TEXT," + KEY_PU + " REAL" + ")";
     private static final String CREATE_USERS_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_USERS + "("
@@ -70,16 +70,16 @@ public class DataBaseHandler extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // Drop older table if existed
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
-        db.execSQL("DROP TABLE IF EXISTS " + CREATE_PRODUCTS_TABLE);
-        db.execSQL("DROP TABLE IF EXISTS " + CREATE_SUPPLIERS_TABLE);
-        db.execSQL("DROP TABLE IF EXISTS " + CREATE_SUPPROD_TABLE);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_SUPPLIERS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_PRODUCTS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_SUPPROD);
 
         // Create tables again
         onCreate(db);
     }
 
-    public void createDataBase(){
-        this.db=getWritableDatabase();
+    public void createDataBase() {
+        this.db = getWritableDatabase();
         this.onCreate(db);
     }
 
@@ -103,6 +103,7 @@ public class DataBaseHandler extends SQLiteOpenHelper {
 
         ContentValues values = new ContentValues();
         values.put(KEY_NAME, supplier.get_name()); // Contact Name
+        values.put(KEY_USRID, supplier.getUsr_id());
 
         // Inserting Row
         db.insert(TABLE_SUPPLIERS, null, values);
@@ -146,7 +147,7 @@ public class DataBaseHandler extends SQLiteOpenHelper {
                 new String[]{String.valueOf(email)}, null, null, null, null);
 
         User user = null;
-        if (cursor.moveToFirst()){
+        if (cursor.moveToFirst()) {
             user = new User(cursor.getString(1),
                     cursor.getString(2), cursor.getString(3));
             user.set_id(cursor.getInt(0));
@@ -161,12 +162,12 @@ public class DataBaseHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query(TABLE_SUPPLIERS, new String[]{KEY_ID,
-                        KEY_NAME}, KEY_ID + "=?",
+                        KEY_NAME, KEY_USRID}, KEY_ID + "=?",
                 new String[]{String.valueOf(id)}, null, null, null, null);
         if (cursor != null)
             cursor.moveToFirst();
 
-        Supplier supplier = new Supplier(cursor.getString(1));
+        Supplier supplier = new Supplier(cursor.getString(1), cursor.getInt(2));
         supplier.set_id(cursor.getInt(0));
 
         // return contact
@@ -194,7 +195,7 @@ public class DataBaseHandler extends SQLiteOpenHelper {
     public List<Supplier> getAllUserSuppliers(int user) {
         List<Supplier> supplierList = new ArrayList<Supplier>();
         // Select All Query
-        String selectQuery = "SELECT " + KEY_SUPID + " FROM " + TABLE_SUPPROD
+        String selectQuery = "SELECT " + KEY_ID + " FROM " + TABLE_SUPPLIERS
                 + " WHERE " + KEY_USRID + " = ?";
 
         SQLiteDatabase db = this.getReadableDatabase();
@@ -338,11 +339,31 @@ public class DataBaseHandler extends SQLiteOpenHelper {
                 new String[]{String.valueOf(user.get_id())});
     }
 
+    // Updating single contact
+    public int updateSupplier(String supplier, int id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_NAME, supplier);
+
+        // updating row
+        return db.update(TABLE_SUPPLIERS, values, KEY_ID + " = ?",
+                new String[]{String.valueOf(id)});
+    }
+
     // Deleting single contact
     public void deleteUser(User user) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_USERS, KEY_ID + " = ?",
                 new String[]{String.valueOf(user.get_id())});
+        db.close();
+    }
+
+    // Deleting single contact
+    public void deleteSupplier(int id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_SUPPLIERS, KEY_ID + " = ?",
+                new String[]{String.valueOf(id)});
         db.close();
     }
 }

@@ -6,4 +6,8 @@
     <string name="openDrawer">openDrawer</string>
     <string name="closeDrawer">closeDrawer</string>
     <string name="sup">Ajouter un fournisseur</string>
+    <string name="list_prod">Produits</string>
+    <string name="up_sup">Modifier Fournisseur</string>
+    <string name="update">Modifier</string>
+    <string name="delete">Supprimer</string>
 </resources>

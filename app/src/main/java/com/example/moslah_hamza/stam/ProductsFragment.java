@@ -35,16 +35,12 @@ public class ProductsFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        final RecyclerView rv = (RecyclerView) view.findViewById(R.id.supp_view);
-        LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
-        mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        rv.setLayoutManager(mLayoutManager);
-        mProducts = new ArrayList<>();
-
-//        List<Product> productList = db.getAllUserProduct(userLocalStore.getLoggedInUser().get_id());
-//        for(Product product : productList)
-//            mProducts.add(product.get_name());
-
-        rv.setAdapter(new MyAdapter(mProducts));
+//        final RecyclerView rv = (RecyclerView) view.findViewById(R.id.supp_view);
+//        LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
+//        mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+//        rv.setLayoutManager(mLayoutManager);
+//        mProducts = new ArrayList<>();
+//
+//        rv.setAdapter(new SupAdapter(mProducts, getActivity(),this));
     }
 }

@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         DataBaseHandler db = new DataBaseHandler(getApplicationContext());
-        db.createDataBase();
+       // db.createDataBase();
 
         userLocalStore = new UserLocalStore(this);
 

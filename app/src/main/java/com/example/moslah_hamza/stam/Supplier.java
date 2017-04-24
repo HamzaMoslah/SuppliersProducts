@@ -6,14 +6,24 @@ package com.example.moslah_hamza.stam;
 
 public class Supplier {
     //private variables
-    int _id;
-    String _name;
+    private int _id;
+    private int usr_id;
+    private String _name;
 
     public Supplier() {
     }
 
-    public Supplier(String _name) {
+    public Supplier(String _name, int usr_id) {
         this._name = _name;
+        this.usr_id = usr_id;
+    }
+
+    public int getUsr_id() {
+        return usr_id;
+    }
+
+    public void setUsr_id(int usr_id) {
+        this.usr_id = usr_id;
     }
 
     public int get_id() {

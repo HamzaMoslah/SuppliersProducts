@@ -21,11 +21,13 @@ public class ProdAdapter extends RecyclerView.Adapter<ProdAdapter.MyViewHolder> 
     private List<Product> mtitles;
     private Context context;
     private Fragment fragment;
+    private int sup;
 
-    public ProdAdapter(List<Product> myFilieres, Context context, Fragment fragment) {
+    public ProdAdapter(List<Product> myFilieres, Context context, Fragment fragment, int sup) {
         mtitles = myFilieres;
         this.context = context;
         this.fragment = fragment;
+        this.sup = sup;
     }
 
     @Override
@@ -38,7 +40,7 @@ public class ProdAdapter extends RecyclerView.Adapter<ProdAdapter.MyViewHolder> 
     @Override
     public void onBindViewHolder(ProdAdapter.MyViewHolder holder, int position) {
         holder.name.setText(mtitles.get(position).get_name());
-        holder.qte.setText(mtitles.get(position).getQte());
+        holder.qte.setText(""+mtitles.get(position).getQte());
         holder.pu.setText(""+mtitles.get(position).get_PU());
     }
 
@@ -62,11 +64,24 @@ public class ProdAdapter extends RecyclerView.Adapter<ProdAdapter.MyViewHolder> 
                 @Override
                 public void onClick(View view) {
                     Toast.makeText(context, name.getText().toString(), Toast.LENGTH_LONG).show();
-//                    final FragmentTransaction ft = fragment.getFragmentManager().beginTransaction();
-//                    ft.replace(R.id.frame, updateInstance(name.getText().toString()), "NewFragmentTag");
-//                    ft.commit();
+                    final FragmentTransaction ft = fragment.getFragmentManager().beginTransaction();
+                    ft.replace(R.id.frame, updateInstance(name.getText().toString()), "NewFragmentTag");
+                    ft.commit();
                 }
             });
+        }
+
+        public ProdUpdate updateInstance(String name) {
+            ProdUpdate supplierUpdate = new ProdUpdate();
+            Bundle args = new Bundle();
+            args.putString("name", name);
+            args.putDouble("pu", mtitles.get(this.getLayoutPosition()).get_PU());
+            args.putInt("sup", sup);
+            args.putInt("qte", mtitles.get(this.getLayoutPosition()).getQte());
+            args.putInt("id", mtitles.get(this.getLayoutPosition()).get_id());
+            supplierUpdate.setArguments(args);
+
+            return supplierUpdate;
         }
     }
 }

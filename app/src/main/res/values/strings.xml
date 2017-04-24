@@ -10,4 +10,5 @@
     <string name="up_sup">Modifier Fournisseur</string>
     <string name="update">Modifier</string>
     <string name="delete">Supprimer</string>
+    <string name="prod">Ajouter un produit</string>
 </resources>

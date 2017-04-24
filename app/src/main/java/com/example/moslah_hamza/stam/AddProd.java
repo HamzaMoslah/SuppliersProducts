@@ -2,34 +2,35 @@ package com.example.moslah_hamza.stam;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 
-import java.util.ArrayList;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
- * Created by Moslah_Hamza on 17/04/2017.
+ * Created by Moslah_Hamza on 24/04/2017.
  */
 
-public class ProductsFragment extends Fragment {
-    List<Product> mProducts;
+public class AddProd extends Fragment {
+    List<String> mSuppliers;
     DataBaseHandler db;
-    int supid;
-    FloatingActionButton add;
+    Button fab;
+    int sup;
+    EditText prodname, prodqte, prodpu;
     UserLocalStore userLocalStore;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.suppliers, container, false);
+        View v = inflater.inflate(R.layout.add_prod, container, false);
         db = new DataBaseHandler(getActivity());
         //shared preferences class'
         userLocalStore = new UserLocalStore(getActivity());
@@ -39,34 +40,35 @@ public class ProductsFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        prodname = (EditText) view.findViewById(R.id.prod_name);
+        prodpu = (EditText) view.findViewById(R.id.prod_pu);
+        fab = (Button) view.findViewById(R.id.add_prod);
         Bundle bundle = getArguments();
-        supid = bundle.getInt("sup");
-        add = (FloatingActionButton) view.findViewById(R.id.add);
-        add.setOnClickListener(new View.OnClickListener() {
+        sup = bundle.getInt("sup");
+        prodqte = (EditText) view.findViewById(R.id.prod_qte);
+        fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Product product = new Product(prodname.getText().toString(), Double.valueOf(prodpu.getText().toString()));
+                product.setUser(userLocalStore.getLoggedInUser().get_id());
+                product.setSup(sup);
+                product.setQte(Integer.valueOf(prodqte.getText().toString()));
+
+                db.addProduct(product);
                 final FragmentTransaction ft = getFragmentManager().beginTransaction();
                 ft.replace(R.id.frame, productsInstance(), "NewFragmentTag");
                 ft.commit();
             }
         });
-
-        final RecyclerView rv = (RecyclerView) view.findViewById(R.id.supp_view);
-        LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
-        mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        rv.setLayoutManager(mLayoutManager);
-        mProducts = new ArrayList<>();
-        mProducts = db.getAllUserProduct(userLocalStore.getLoggedInUser().get_id(),supid);
-
-        rv.setAdapter(new ProdAdapter(mProducts, getActivity(),this, supid));
     }
 
-    public AddProd productsInstance() {
-        AddProd productsFragment = new AddProd();
+    public ProductsFragment productsInstance() {
+        ProductsFragment productsFragment = new ProductsFragment();
         Bundle args = new Bundle();
-        args.putInt("sup", supid);
+        args.putInt("sup", sup);
         productsFragment.setArguments(args);
 
         return productsFragment;
     }
 }
+

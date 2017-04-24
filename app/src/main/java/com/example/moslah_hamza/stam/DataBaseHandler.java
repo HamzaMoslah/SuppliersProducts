@@ -125,6 +125,9 @@ public class DataBaseHandler extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(KEY_NAME, product.get_name()); // Contact Name
         values.put(KEY_PU, product.get_PU()); // Contact Name
+        values.put(KEY_QTE, product.getQte());
+        values.put(KEY_USRID, product.getUser());
+        values.put(KEY_SUPID, product.getSup());
 
         // Inserting Row
         db.insert(TABLE_PRODUCTS, null, values);
@@ -355,6 +358,20 @@ public class DataBaseHandler extends SQLiteOpenHelper {
     }
 
     // Updating single contact
+    public int updateProduct(String prod, int id, double pu, int qte) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_NAME, prod);
+        values.put(KEY_QTE, qte);
+        values.put(KEY_PU, pu);
+
+        // updating row
+        return db.update(TABLE_PRODUCTS, values, KEY_ID + " = ?",
+                new String[]{String.valueOf(id)});
+    }
+
+    // Updating single contact
     public int updateSupplier(String supplier, int id, String tel, String adress) {
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -380,6 +397,14 @@ public class DataBaseHandler extends SQLiteOpenHelper {
     public void deleteSupplier(int id) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_SUPPLIERS, KEY_ID + " = ?",
+                new String[]{String.valueOf(id)});
+        db.close();
+    }
+
+    // Deleting single contact
+    public void deleteProduct(int id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_PRODUCTS, KEY_ID + " = ?",
                 new String[]{String.valueOf(id)});
         db.close();
     }
